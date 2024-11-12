@@ -112,6 +112,7 @@ class UserProfile(generics.ListAPIView, generics.UpdateAPIView):
 class UserAddressView(generics.ListCreateAPIView, generics.UpdateAPIView,
                       generics.DestroyAPIView):
     serializer_class = UserAddressSerializer
+    permission_classes = [AllowAny]
 
     @staticmethod
     def handle_default_address(usr):
@@ -125,17 +126,18 @@ class UserAddressView(generics.ListCreateAPIView, generics.UpdateAPIView,
         data = self.serializer_class(data=request.data)
         if data.is_valid(raise_exception=True):
             if data.validated_data.get("is_default") is True:
-                self.handle_default_address(usr=request.user)
+
+                self.handle_default_address(usr=data.validated_data['user'])
 
             user_address = UserAddress.objects.create(
-                **data.validated_data,
-                user=request.user
+                **data.validated_data
             )
             serialize = self.serializer_class(user_address)
             return Response(serialize.data, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
-        user_address = UserAddress.objects.filter(user=request.user)
+        user_mail = request.query_params.get("user")
+        user_address = UserAddress.objects.select_related("user").filter(user__email=user_mail)
         serialize = self.serializer_class(user_address, many=True)
         return Response(serialize.data)
 
@@ -146,7 +148,7 @@ class UserAddressView(generics.ListCreateAPIView, generics.UpdateAPIView,
             serializer = self.serializer_class(user_address.first(), data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 if serializer.validated_data.get("is_default") is True:
-                    self.handle_default_address(usr=request.user)
+                    self.handle_default_address(usr=serializer.validated_data['user'])
                 serializer.save()
             return Response(serializer.data)
         return Response({"id": "address not found"}, status=status.HTTP_404_NOT_FOUND)
