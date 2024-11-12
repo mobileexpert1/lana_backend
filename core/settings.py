@@ -142,4 +142,8 @@ EMAIL_HOST_USER = 'cspc186@gmail.com'
 EMAIL_HOST_PASSWORD = 'wwredylgzoaifdct'
 
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-91bc3.up.railway.app',
+    'http://web-production-91bc3.up.railway.app',
+]
 
