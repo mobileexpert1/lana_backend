@@ -40,3 +40,7 @@ coverage.xml
 
 # Django debug toolbar files
 .debug-toolbar/
+
+db.sqlite3
+/db.sqlite3
+
