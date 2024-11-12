@@ -41,6 +41,6 @@ for model in models:
     except:
         pass
 
-admin.site.site_header = "ES Administration"
-admin.site.site_title = " ES Supplements"
-admin.site.index_title = "ES Supplements"
+admin.site.site_header = "Lana Administration"
+admin.site.site_title = " Lana"
+admin.site.index_title = "Lana"

@@ -89,3 +89,24 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "profile_pic", "gender", "id", "phone_number",)
+
+
+class SetUserPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(max_length=255)
+    confirm_password = serializers.CharField(max_length=255)
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        password = attrs.get("password")
+        confirm_password = attrs['confirm_password']
+        if password != confirm_password:
+            raise ValidationError({"confirm_password": "password does not match."})
+
+        usr = User.objects.filter(email=attrs.get("email"))
+        if usr.exists() is False:
+            raise ValidationError({"email": "email does not exits."})
+        attrs['user'] = usr.first()
+        return attrs
+
+
+
